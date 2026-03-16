@@ -53,10 +53,10 @@ orchestrator, builder, skeptic — portal landing page and shared CSS theme for 
 orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod for Balatro. Adapted from sts2 architecture. Lua/Steamodded mod + external bot via TCP. Checkpoint-based state, no forum.
 
 ### rts (7 agents)
-orchestrator, builder, verifier, strategist, librarian, debugger, skeptic — Space Crystals RTS game development. Protocol+forum model. Godot 4.6/GDScript. Playable 1v1 with AI opponent. Phase 1-3 complete, Phase 4+ deferred (remaining factions, advanced units, multiplayer).
+orchestrator, builder, verifier, strategist, librarian, debugger, skeptic — Space Crystals RTS game development. Protocol+forum model. Godot 4.6/GDScript. Playable 1v1 with AI opponent. Phase 1-3 complete, Phase 4 active (Syndicate faction, data-driven refactor).
 
 ### singularity-forge (4 agents) — `~/projects/singularity/singularity-forge`
-forgemaster, assayer, smith, keeper — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
+forgemaster, assayer, smith, skeptic — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
 
 ### agent-forge (template, not active)
 forgemaster, assayer, smith, keeper — these are template roles, not active agents. agent-forge is the generic default forge that other forge instances (like this one) are derived from. It holds the canonical patterns and role templates. It doesn't run cycles — it gets maintained when patterns evolve.

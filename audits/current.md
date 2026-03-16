@@ -674,3 +674,48 @@ Idle (4th consecutive). All metrics unchanged. No flags, no smith pass.
 2. sts2: AGENTS.md stale — deferred until architecture settles
 3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
 4. ops: DEPLOY_QUEUE at 147 lines — backlog needs attention
+
+### 2026-03-16 — Twenty-fifth cycle (full scan + smith pass)
+
+**Full ecosystem scan.** 11 projects scanned (rts first full scan).
+
+| Project | FORUM | memory/ | agents/ | Git State | Notable |
+|---------|-------|---------|---------|-----------|---------|
+| thisminute | **792** (+307) | 7 (=) | 12 (=) | 4 M / 2 ?? | Forum growing again. New scripts (audit_worlds, migrate_stale_narratives). |
+| toolshed | 91 (=) | 6 (=) | 7 (=) | Shared w/ forge | Stable. |
+| rhizome | N/A | 1 (=) | 1 (=) | Shared w/ forge | Stable. |
+| forge.thisminute.org | N/A | 1 (=) | 3 + skill (=) | 9 M / 0 ?? | Toolshed active (schema, build, curator updates). Checkpoint 82. |
+| ops | N/A | 2 (=) | 2 (=) | 3 M | DEPLOY_QUEUE **159** (+12). Backlog still growing. |
+| sts2 | N/A | 3 (=) | 9 (=) | 3+ M / 28+ ?? | Cycle 37 unchanged. Heavy untracked accumulation. |
+| balatro | N/A | **9** (+1) | 9 (=) | 4 M / 13+ ?? | Cycle 14. Memory grew. Active experimentation (attempt scripts, screenshots). |
+| agent-forge | N/A | N/A | 4 template | Clean | 7 patterns. v0.4. Stable. |
+| rts | **1178** (first scan) | 3 | 7 | 2 M | **Largest forum in ecosystem.** Librarian exists. Protocol+forum model. Phase 4 starting. |
+| singularity-forge | N/A | 0 | 4 | 2 M | Active — 25 projects under ~/projects/singularity/. Forgemaster + audits modified. No memory/. |
+| recipe-scaler-substituter | N/A | 1 | 1 | Clean | Dormant. |
+
+**Smith pass applied:**
+
+1. **rts FORUM archived** — 1178 lines (18 threads, Phase 1-3 + polish history) archived to `reports/forum_archive_2026-03-16.md`. Clean FORUM written with shipped work summary + 3 active threads (Phase 4 architecture plan, Skeptic Review #3 with open bugs/specs). Result: 1178 → ~150 lines. Second archive in project history (first was Feb 23).
+
+**Observations:**
+
+1. **rts is a mature project hiding behind no forge visibility.** 7 agents, protocol+forum model, 3 memory files, 27 source files (~8100 LOC GDScript), playable 1v1 RTS. Phase 4 (second faction) beginning. The 1178-line forum accumulated because the librarian was never spawned for maintenance — same pattern seen in thisminute and mainmenu previously. Now cleaned.
+
+2. **thisminute forum 792, trending up.** Was 485 last cycle. Active dev session (config, narrative analyzer, scraper, app.js + 2 new scripts). Not critical yet — librarian has proven effective when spawned. Will flag at 1000.
+
+3. **ops DEPLOY_QUEUE 159.** Up from 147. Steady +12/cycle growth. Steward should process.
+
+4. **singularity-forge is active with 25 projects** but has no memory/ directory. This is a separate forge instance — not intervening unless asked.
+
+5. **balatro memory 8→9.** Steady organic growth. Still at cycle 14. Active experimentation with attempt scripts and seed-specific data.
+
+6. **sts2 unchanged at cycle 37.** Same untracked file count, same checkpoint. Dormant or blocked.
+
+7. **Three coordination models all healthy.** Protocol+Forum (thisminute 792, toolshed 91, rts ~150 post-cleanup), Checkpoint (balatro cycling, forge.thisminute.org active, sts2 dormant), Steward (rhizome + ops stable).
+
+**Standing issues:**
+1. toolshed: "mainmenu" references in code/deploy (operational)
+2. sts2: AGENTS.md stale — deferred until architecture settles
+3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
+4. ops: DEPLOY_QUEUE at 159 lines — backlog needs attention
+5. thisminute: forum at 792 — watch, flag at 1000
