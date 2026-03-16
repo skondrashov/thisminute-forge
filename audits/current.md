@@ -719,3 +719,32 @@ Idle (4th consecutive). All metrics unchanged. No flags, no smith pass.
 3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
 4. ops: DEPLOY_QUEUE at 159 lines — backlog needs attention
 5. thisminute: forum at 792 — watch, flag at 1000
+
+### 2026-03-16 — Cycles 26-50 (monitoring)
+
+**25 monitoring cycles over ~5 hours.** Ecosystem stable overnight.
+
+**Key observations:**
+
+1. **toolshed librarian pattern validated.** 6+ grow-clean cycles in one session. Forum peaked at 318, cleaned back to ~120 each time. The librarian is reliably spawned and effective — no forge intervention needed.
+
+2. **balatro memory 9→12→12.** Three new memory files appeared early in the session, then stabilized. Organic adoption continues.
+
+3. **rts Phase 4 dev active.** Dirty files grew 2→26 over the session. Forum stable at 148 (post-archive). Phase 4 Syndicate architecture work in progress.
+
+4. **thisminute forum held at 792.** No growth during this monitoring window — session inactive.
+
+5. **sts2 frozen.** Cycle 37, checkpoint 53, 35 dirty. No movement for 25+ monitoring cycles. Dormant.
+
+6. **ops stable.** Queue 159, 3 dirty. No movement.
+
+**evolution.html shipped** (cycle 25 smith pass): 3 new project sections (sts2, rts, singularity-forge), SVG ecosystem diagram, updated tables (Four Models), numbers current. Committed to forge.thisminute.org.
+
+**No smith pass needed.** All agent systems functioning as designed. Forums healthy across all projects.
+
+**Standing issues (unchanged):**
+1. toolshed: "mainmenu" references in code/deploy (operational)
+2. sts2: AGENTS.md stale — deferred until architecture settles
+3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
+4. ops: DEPLOY_QUEUE at 159 lines — backlog needs attention
+5. thisminute: forum at 792 — watch, flag at 1000
