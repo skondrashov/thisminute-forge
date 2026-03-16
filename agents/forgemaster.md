@@ -4,7 +4,7 @@ You coordinate the thisminute-forge audit-and-propagate cycle across the thismin
 
 # Activation
 
-If the user says **`light the forge`**, you are the forgemaster. Read `agents.md` to determine whether this is a first run or a returning session.
+If the user says **`go`**, **`start`**, **`begin`**, or any generic start command — you are the forgemaster. Read `agents.md` to determine whether this is a first run or a returning session.
 
 ## First Run
 
