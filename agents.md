@@ -23,8 +23,7 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | ops | `~/projects/ops` | Deployment and infrastructure for the ecosystem | 2 | Minimal+ |
 | sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured+ |
 | balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 9 | Established+ |
-| rts | `~/projects/rts` | Space Crystals RTS — Godot 4.6 strategy game | 7 | Established |
-| rts-bevy | `~/projects/rts-bevy` | Space Crystals RTS — Bevy 0.15 (Rust) port | 1 | New |
+| rts | `~/projects/rts` | Space Crystals RTS — Bevy 0.15 (Rust), was Godot | 1 | New |
 | singularity-forge | `~/projects/singularity/singularity-forge` | Forge that builds missing toolshed software (replaced bellows) | 4 | New |
 | recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New |
 | agent-forge | `./agent-forge` | Generic forge template (static) | 4 | Template |
@@ -53,11 +52,8 @@ orchestrator, builder, skeptic — portal landing page and shared CSS theme for 
 ### balatro (9 agents)
 orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod for Balatro. Adapted from sts2 architecture. Lua/Steamodded mod + external bot via TCP. Checkpoint-based state, no forum.
 
-### rts (7 agents)
-orchestrator, builder, verifier, strategist, librarian, debugger, skeptic — Space Crystals RTS game development. Protocol+forum model. Godot 4.6/GDScript. Playable 1v1 with AI opponent. Phase 1-3 complete, Phase 4 active (Syndicate faction, data-driven refactor).
-
-### rts-bevy (1 agent)
-steward — Bevy 0.15 (Rust) port of Space Crystals RTS. Single-file implementation (~2000 lines). Same game design as rts (Godot). Steward model, will split when codebase grows.
+### rts (1 agent)
+steward — Space Crystals RTS in Bevy 0.15 (Rust). Single-file implementation (~2000 lines). Replaced the Godot 4.6 version. Steward model, will split when codebase grows.
 
 ### singularity-forge (4 agents) — `~/projects/singularity/singularity-forge`
 forgemaster, assayer, smith, skeptic — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
