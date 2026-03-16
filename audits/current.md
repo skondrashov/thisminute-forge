@@ -748,3 +748,30 @@ Idle (4th consecutive). All metrics unchanged. No flags, no smith pass.
 3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
 4. ops: DEPLOY_QUEUE at 159 lines — backlog needs attention
 5. thisminute: forum at 792 — watch, flag at 1000
+
+### 2026-03-16 — Cycles 51-60 (monitoring + rts transition)
+
+**10 monitoring cycles over ~5 hours.**
+
+**rts project transition:**
+- Old rts (Godot 4.6, 7 agents, protocol+forum) deleted by user
+- rts-bevy (Bevy 0.15, Rust) renamed to rts as the replacement
+- Agent system: steward model (1 agent) — right fit for single-file ~2000 LOC
+- Registry consolidated: 2 entries → 1. Project count 12→11 active.
+
+**Ecosystem observations:**
+1. **toolshed librarian still effective.** Multiple grow-clean cycles observed (peaks ~200, cleans to ~110). Consistent pattern throughout the session.
+2. **forge.thisminute.org committed 29 files** (cycle 52), then started new session accumulating 17 dirty.
+3. **balatro dirty 24→34** over the window — active development session.
+4. **ops DEPLOY_QUEUE grew 159→180.** Backlog still accumulating.
+5. **thisminute went clean** (17→0 dirty). Session ended or committed.
+6. **sts2 frozen** at cycle 37, 35 dirty. No movement.
+
+**No smith pass needed.** All agent systems healthy.
+
+**Standing issues:**
+1. toolshed: "mainmenu" references in code/deploy (operational)
+2. sts2: AGENTS.md stale — deferred until architecture settles
+3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
+4. ops: DEPLOY_QUEUE at 180 lines — backlog growing
+5. thisminute: forum at 792 — watch, flag at 1000
