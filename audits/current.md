@@ -642,3 +642,35 @@ Idle (4th consecutive). All metrics unchanged. No flags, no smith pass.
 3. agent-forge v0.5: checkpoint pattern extraction
 4. ops: DEPLOY_QUEUE at 102 lines
 5. recipe-scaler-substituter: needs `git init` and first build session
+
+### 2026-03-15 — Twenty-fourth cycle (full scan)
+
+**Full ecosystem scan.** 10 projects scanned.
+
+| Project | FORUM | memory/ | agents/ | Git State | Notable |
+|---------|-------|---------|---------|-----------|---------|
+| thisminute | **485** (+41) | 7 (=) | 11 + skill (=) | 12 M / 1 ?? | Heavy dev session — frontend, e2e, strategy, ref docs all modified. |
+| toolshed | 91 (=) | 6 (=) | 7 (=) | Shared w/ forge | Stable. |
+| rhizome | N/A | 1 (steward 32) | 1 (steward 36) | Shared w/ forge | Stable. |
+| forge.thisminute.org | N/A | 1 (=) | 3 + skill (=) | 2 M | 82-line checkpoint. Orchestrator consolidation. |
+| ops | N/A | 2 (=) | 2 (=) | 3 M | **DEPLOY_QUEUE 147** (+45). Backlog accelerating. |
+| sts2 | N/A | 3 (=) | 9 (=) | 8 M / 27 ?? | Cycle 37 unchanged. Stuck on combat popup. |
+| balatro | N/A | 8 (=) | 9 (=) | 2 M / 4 ?? | **Cycle 14** (+1). Stateless runner built ($4.29→$0.30-0.50/run). |
+| agent-forge | N/A | N/A | 4 template | Clean | 7 patterns. Stable. |
+| bellows | N/A | 1 (=) | 1 (steward) | Clean | Dormant. |
+| recipe-scaler-substituter | N/A | 1 (=) | 1 (steward) | Clean | Dormant. |
+
+**Observations:**
+
+1. **thisminute forum 485, 12 dirty files.** Active dev session but forum not alarming (under 500). No intervention needed.
+2. **ops deploy queue 147 (+45).** Growing faster than it's clearing. Steward should process backlog.
+3. **balatro stateless runner.** Cost reduction from ~$4.29 to ~$0.30-0.50 per run. Significant efficiency win. Cycle 14 advancing steadily.
+4. **sts2 still stuck at cycle 37.** Same combat popup blocker. Not a forge concern.
+
+**No smith pass needed.** No broken references, regressions, or high-ROI upgrades.
+
+**Standing issues:**
+1. toolshed: "mainmenu" references in code/deploy (operational)
+2. sts2: AGENTS.md stale — deferred until architecture settles
+3. agent-forge v0.5: checkpoint pattern extraction (balatro cycle 14, target 100)
+4. ops: DEPLOY_QUEUE at 147 lines — backlog needs attention

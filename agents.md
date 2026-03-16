@@ -23,8 +23,9 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | ops | `~/projects/ops` | Deployment and infrastructure for the ecosystem | 2 | Minimal+ |
 | sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured+ |
 | balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 9 | Established+ |
-| bellows | `~/projects/bellows` | Crucible-to-toolshed pipeline (scaffold, validate, publish) | 1 | Minimal |
-| recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New (bellows-scaffolded) |
+| rts | `~/projects/rts` | Space Crystals RTS — Godot 4.6 strategy game | 7 | Established |
+| singularity-forge | `~/projects/singularity/singularity-forge` | Forge that builds missing toolshed software (replaced bellows) | 4 | New |
+| recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New |
 | agent-forge | `./agent-forge` | Generic forge template (static) | 4 | Template |
 
 ## Role Lists
@@ -51,8 +52,11 @@ orchestrator, builder, skeptic — portal landing page and shared CSS theme for 
 ### balatro (9 agents)
 orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod for Balatro. Adapted from sts2 architecture. Lua/Steamodded mod + external bot via TCP. Checkpoint-based state, no forum.
 
-### bellows (1 agent)
-steward — maintains the crucible-to-toolshed pipeline: scaffolds projects from crucible ideas, tracks progress, validates, publishes to toolshed.
+### rts (7 agents)
+orchestrator, builder, verifier, strategist, librarian, debugger, skeptic — Space Crystals RTS game development. Protocol+forum model. Godot 4.6/GDScript. Playable 1v1 with AI opponent. Phase 1-3 complete, Phase 4+ deferred (remaining factions, advanced units, multiplayer).
+
+### singularity-forge (4 agents) — `~/projects/singularity/singularity-forge`
+forgemaster, assayer, smith, keeper — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
 
 ### agent-forge (template, not active)
 forgemaster, assayer, smith, keeper — these are template roles, not active agents. agent-forge is the generic default forge that other forge instances (like this one) are derived from. It holds the canonical patterns and role templates. It doesn't run cycles — it gets maintained when patterns evolve.
