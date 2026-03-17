@@ -829,6 +829,10 @@ Snapshot: thisminute FORUM 792 / 1 dirty, toolshed FORUM 292, forge.thisminute.o
 
 **No smith pass needed.**
 
+### 2026-03-17 — Cycles 84-90 (monitoring, dormant)
+
+**7 monitoring cycles, 3.5 hours. Ecosystem dormant.** Only signal: balatro +1 dirty (44→45) in cycle 88. All else unchanged across entire window. Total session: 65 monitoring cycles (25-90) over ~20 hours.
+
 **Standing issues (unchanged):**
 1. toolshed: "mainmenu" references in code/deploy (operational)
 2. sts2: AGENTS.md stale — deferred until architecture settles
