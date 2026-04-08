@@ -21,11 +21,12 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | toolshed | `~/projects/forge.thisminute.org/toolshed` | Universal software directory (was mainmenu) | 7 | Full |
 | rhizome | `~/projects/forge.thisminute.org/rhizome` | Agent orchestration pattern catalog | 1 | Minimal |
 | ops | `~/projects/ops` | Deployment and infrastructure for the ecosystem | 2 | Minimal+ |
-| sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured+ |
-| balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 9 | Established+ |
-| rts | `~/projects/rts` | Space Crystals RTS — Bevy 0.15 (Rust), was Godot | 1 | New |
-| singularity-forge | `~/projects/singularity/singularity-forge` | Forge that builds missing toolshed software (replaced bellows) | 4 | New |
+| sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured |
+| balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 5 | Established+ |
+| rts | `~/projects/rts` | Clash — 3-faction multiplayer RTS (Bevy 0.15, Rust) | 3 | Minimal+ |
+| singularity-forge | `~/projects/singularity/singularity-forge` | Forge that builds missing toolshed software (replaced bellows) | 4 | Structured |
 | recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New |
+| arc-agi | `~/projects/arc-agi` | LLM agent for ARC-AGI-3 interactive puzzles | 5 | Structured |
 | agent-forge | `./agent-forge` | Generic forge template (static) | 4 | Template |
 
 ## Role Lists
@@ -49,14 +50,17 @@ orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, ov
 ### forge.thisminute.org (3 agents)
 orchestrator, builder, skeptic — portal landing page and shared CSS theme for the forge ecosystem site. Checkpoint-based state, no forum. Owns visual consistency across rhizome, toolshed, and forge sub-sites. crucible/ (ideas database) being built out as fourth pillar.
 
-### balatro (9 agents)
-orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod for Balatro. Adapted from sts2 architecture. Lua/Steamodded mod + external bot via TCP. Checkpoint-based state, no forum.
+### balatro (5 agents)
+orchestrator, player, analyst, librarian, api-developer — LLM autopilot mod for Balatro. Pivoted to Claude-as-player architecture. Lua/Steamodded mod + TCP server + cmd.py CLI. Playbook-based knowledge, no forum. NO AUTOPLAY constraint.
 
-### rts (1 agent)
-steward — Space Crystals RTS in Bevy 0.15 (Rust). Single-file implementation (~2000 lines). Replaced the Godot 4.6 version. Steward model, will split when codebase grows.
+### rts (3 agents)
+steward, builder, skeptic — Clash, a 3-faction multiplayer RTS in Bevy 0.15 (Rust). ~7,200+ lines across 13+ source files. UDP relay networking. Steward coordinates, builder implements, skeptic reviews.
 
 ### singularity-forge (4 agents) — `~/projects/singularity/singularity-forge`
 forgemaster, assayer, smith, skeptic — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
+
+### arc-agi (5 agents)
+orchestrator, player, analyst, skeptic, librarian — LLM agent for ARC-AGI-3 interactive puzzles. Claude-as-player architecture: TCP server + cmd.py CLI + play.py supervisor. Playbook-based knowledge, checkpoint state. Cycle 6, 3 levels solved.
 
 ### agent-forge (template, not active)
 forgemaster, assayer, smith, keeper — these are template roles, not active agents. agent-forge is the generic default forge that other forge instances (like this one) are derived from. It holds the canonical patterns and role templates. It doesn't run cycles — it gets maintained when patterns evolve.
