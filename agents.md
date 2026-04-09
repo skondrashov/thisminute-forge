@@ -24,7 +24,7 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured |
 | balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 5 | Established+ |
 | rts | `~/projects/rts` | Clash — 3-faction multiplayer RTS (Bevy 0.15, Rust) | 3 | Minimal+ |
-| singularity-forge | `~/projects/singularity/singularity-forge` | Forge that builds missing toolshed software (replaced bellows) | 4 | Structured |
+| singularity-forge | `~/projects/singularity/singularity-forge` | ~~Forge that builds missing toolshed software~~ | 4 | Retired |
 | recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New |
 | arc-agi | `~/projects/arc-agi` | LLM agent for ARC-AGI-3 interactive puzzles | 5 | Structured |
 | agent-forge | `./agent-forge` | Generic forge template (static) | 4 | Template |
@@ -56,8 +56,8 @@ orchestrator, player, analyst, librarian, api-developer — LLM autopilot mod fo
 ### rts (3 agents)
 steward, builder, skeptic — Clash, a 3-faction multiplayer RTS in Bevy 0.15 (Rust). ~7,200+ lines across 13+ source files. UDP relay networking. Steward coordinates, builder implements, skeptic reviews.
 
-### singularity-forge (4 agents) — `~/projects/singularity/singularity-forge`
-forgemaster, assayer, smith, skeptic — forge instance that scans the toolshed for missing software and creates projects to build them. Manages projects under `~/projects/singularity/`. Replaced bellows.
+### singularity-forge (retired)
+Was a forge that scanned the toolshed for software gaps and created projects to fill them. Retired 2026-04-09 — premise that meaningful software gaps exist turned out to be wrong.
 
 ### arc-agi (5 agents)
 orchestrator, player, analyst, skeptic, librarian — LLM agent for ARC-AGI-3 interactive puzzles. Claude-as-player architecture: TCP server + cmd.py CLI + play.py supervisor. Playbook-based knowledge, checkpoint state. Cycle 6, 3 levels solved.
