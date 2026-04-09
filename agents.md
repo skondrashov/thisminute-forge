@@ -17,8 +17,9 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | Project | Path | Domain | Agents | Maturity |
 |---------|------|--------|--------|----------|
 | thisminute | `~/projects/thisminute` | Real-time news aggregation platform | 11 | Full |
-| forge.thisminute.org | `~/projects/forge.thisminute.org` | Portal hub for forge ecosystem (contains rhizome + toolshed) | 3 | Established |
-| toolshed | `~/projects/forge.thisminute.org/toolshed` | Universal software directory (was mainmenu) | 7 | Full |
+| forge.thisminute.org | `~/projects/forge.thisminute.org` | Agentic engineering education site (contains llms + rhizome + toolshed) | 4 | Established |
+| llms | `~/projects/forge.thisminute.org/llms` | Interactive LLM/agent fundamentals explainers | 1 | Minimal |
+| toolshed | `~/projects/forge.thisminute.org/toolshed` | Software directory with filled + unfilled slots | 7 | Full |
 | rhizome | `~/projects/forge.thisminute.org/rhizome` | Agent orchestration pattern catalog | 1 | Minimal |
 | ops | `~/projects/ops` | Deployment and infrastructure for the ecosystem | 2 | Minimal+ |
 | sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured |
@@ -47,8 +48,11 @@ security — infrastructure-layer security: nginx hardening, firewall, SSH, SSL/
 ### sts2 (9 agents)
 orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod development. Uses `.claude/iteration_checkpoint.md` for cross-session state and `.claude/advisor-manager-index.md` as a section index for the 4100+ line core file. No PROTOCOL.md or FORUM.md — rapid iteration cycles with a build-test-fix loop.
 
-### forge.thisminute.org (3 agents)
-orchestrator, builder, skeptic — portal landing page and shared CSS theme for the forge ecosystem site. Checkpoint-based state, no forum. Owns visual consistency across rhizome, toolshed, and forge sub-sites. crucible/ (ideas database) being built out as fourth pillar.
+### forge.thisminute.org (4 agents)
+orchestrator, builder, skeptic + llms steward — agentic engineering education site. Portal connects four sections: LLMs (fundamentals), Rhizome (orchestration patterns), Toolshed (software directory), Forge (agent system management). Checkpoint-based state, no forum. crucible/ absorbed into toolshed as "unfilled slots."
+
+### llms (1 agent) — `forge.thisminute.org/llms`
+steward — interactive explainers on LLM fundamentals and agentic architecture. "Anatomy of an Agent" (5 components), "f(tokens) → token" (statelessness demo). Planned: harness and context pages.
 
 ### balatro (5 agents)
 orchestrator, player, analyst, librarian, api-developer — LLM autopilot mod for Balatro. Pivoted to Claude-as-player architecture. Lua/Steamodded mod + TCP server + cmd.py CLI. Playbook-based knowledge, no forum. NO AUTOPLAY constraint.
