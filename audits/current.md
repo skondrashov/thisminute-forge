@@ -330,3 +330,20 @@ Ordered by urgency. Smith and keeper should work through these in sequence.
 
 *Audit author: assayer, 2026-04-05*
 *Method: direct working-tree inspection + git log + file mtime analysis. No project files were modified.*
+
+---
+
+## Update 2026-04-11 — significant ecosystem changes since this audit
+
+This audit is now stale on several "current state" claims. See `agents.md` for the canonical registry. Notable changes:
+
+- **Major site rebrand + reorganization**: forge.thisminute.org content moved to `~/projects/llms.thisminute.org/` (directory name predates rebrand). The site is now organized around the agent anatomy diagram itself: home (anatomy flowchart) → /models/ → /context/ → /orchestration/ (was rhizome) → /tools/ (was toolshed) → /forge/. New visual identity (Fredoka, watermelon-pink + mint pastel, casual essayist voice). Two new content sections: /models/ (~60 model catalog) and /context/ (statelessness explainer with embedded token demo). crucible/ deleted, /llms/llm/ deleted (absorbed into /context/). Old `~/projects/forge.thisminute.org/` repo orphaned at the 2026-04-09 commit.
+- **Renames**: rhizome → orchestration, toolshed → tools. Same content, same agents, new paths. Nuclear cleanup: localStorage keys reset, API endpoints renamed, deploy script paths updated.
+- **dbt.thisminute.org added**: encrypted static DBT diary card app (single-file, no agents, user maintains directly). Recent activity: onboarding wizard, calendar view, accessibility tweaks.
+- **arc-agi grew from 5 to 12 agents**: added 7 pipeline agents (planner, perception, explorer, analyst, troubleshooter, reviewer, skeptic). Architecture evolved beyond original Claude-as-player: now has agent.py + game_manager.py for batch runs alongside cmd.py for exploration. AGENTS.md still documents only the original 5 — pipeline agents undocumented at top level. Project remains untracked by git. ~130+ player runs across 13 games, best score 45.93 on ft09.
+- **Old forge.thisminute.org repo**: orphaned but not deleted. Frozen at the 2026-04-09 reorganization commit.
+- **llms.thisminute.org has substantial uncommitted work**: this is intentional — the rebrand is queued at `~/projects/ops/DEPLOY_QUEUE.md` and waiting for ops steward to run a one-time VM migration before committing.
+
+**For next assayer cycle**: rewrite from scratch against the new structure. The pattern adoption matrix needs new column names (orchestration/tools), and arc-agi's stale top-level docs are worth flagging in the per-project assessment.
+
+*Update author: forgemaster, 2026-04-11*

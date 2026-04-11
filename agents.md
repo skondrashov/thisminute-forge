@@ -17,18 +17,19 @@ Forge instance for the thisminute ecosystem: a news aggregation platform, its co
 | Project | Path | Domain | Agents | Maturity |
 |---------|------|--------|--------|----------|
 | thisminute | `~/projects/thisminute` | Real-time news aggregation platform | 11 | Full |
-| forge.thisminute.org | `~/projects/forge.thisminute.org` | Agentic engineering education site (contains llms + rhizome + toolshed) | 4 | Established |
-| llms | `~/projects/forge.thisminute.org/llms` | Interactive LLM/agent fundamentals explainers | 1 | Minimal |
-| toolshed | `~/projects/forge.thisminute.org/toolshed` | Software directory with filled + unfilled slots | 7 | Full |
-| rhizome | `~/projects/forge.thisminute.org/rhizome` | Agent orchestration pattern catalog | 1 | Minimal |
+| llms.thisminute.org | `~/projects/llms.thisminute.org` | Agentic engineering education site at forge.thisminute.org (home + models + context + orchestration + tools + forge) | 4 | Established |
+| orchestration | `~/projects/llms.thisminute.org/orchestration` | Agent orchestration pattern catalog (was rhizome) | 1 | Minimal |
+| tools | `~/projects/llms.thisminute.org/tools` | Software directory with filled + unfilled slots (was toolshed) | 7 | Full |
 | ops | `~/projects/ops` | Deployment and infrastructure for the ecosystem | 2 | Minimal+ |
+| dbt.thisminute.org | `~/projects/dbt.thisminute.org` | Encrypted static DBT diary card app — single-file, no agents | 0 | Static |
 | sts2 | `~/projects/sts2` | LLM autopilot mod for Slay the Spire 2 | 9 | Structured |
 | balatro | `~/projects/balatro` | LLM autopilot mod for Balatro | 5 | Established+ |
 | rts | `~/projects/rts` | Clash — 3-faction multiplayer RTS (Bevy 0.15, Rust) | 3 | Minimal+ |
 | singularity-forge | `~/projects/singularity/singularity-forge` | ~~Forge that builds missing toolshed software~~ | 4 | Retired |
 | recipe-scaler-substituter | `~/projects/recipe-scaler-substituter` | Domain-aware numerical reasoning with contextual substitution | 1 | New |
-| arc-agi | `~/projects/arc-agi` | LLM agent for ARC-AGI-3 interactive puzzles | 5 | Structured |
+| arc-agi | `~/projects/arc-agi` | LLM agent for ARC-AGI-3 interactive puzzles | 12 | Structured+ |
 | agent-forge | `./agent-forge` | Generic forge template (static) | 4 | Template |
+| ~~forge.thisminute.org~~ | `~/projects/forge.thisminute.org` | ~~Old portal repo — replaced by llms.thisminute.org on 2026-04-11~~ | — | Orphaned |
 
 ## Role Lists
 
@@ -48,11 +49,17 @@ security — infrastructure-layer security: nginx hardening, firewall, SSH, SSL/
 ### sts2 (9 agents)
 orchestrator, mod-builder, bot-builder, mcp-engineer, play-operator, analyst, overlay-dev, cycle, skeptic — LLM autopilot mod development. Uses `.claude/iteration_checkpoint.md` for cross-session state and `.claude/advisor-manager-index.md` as a section index for the 4100+ line core file. No PROTOCOL.md or FORUM.md — rapid iteration cycles with a build-test-fix loop.
 
-### forge.thisminute.org (4 agents)
-orchestrator, builder, skeptic + llms steward — agentic engineering education site. Portal connects four sections: LLMs (fundamentals), Rhizome (orchestration patterns), Toolshed (software directory), Forge (agent system management). Checkpoint-based state, no forum. crucible/ absorbed into toolshed as "unfilled slots."
+### llms.thisminute.org (4 top-level agents)
+orchestrator, builder, skeptic + section stewards — agentic engineering education site at forge.thisminute.org. Home page IS the agent anatomy diagram; each component links to a deeper section. Six sections: home (anatomy flowchart), models (60+ model catalog), context (statelessness explainer), orchestration (271 patterns, has steward), tools (16K+ entries, has 7-agent team), forge (multi-agent guide). Watermelon-pink + mint pastel theme on parchment-cream / plum-dusk. Fredoka typeface. Casual essayist voice. Repo dir name predates rebrand. Checkpoint-based state, no forum.
 
-### llms (1 agent) — `forge.thisminute.org/llms`
-steward — interactive explainers on LLM fundamentals and agentic architecture. "Anatomy of an Agent" (5 components), "f(tokens) → token" (statelessness demo). Planned: harness and context pages.
+### orchestration (1 agent) — `llms.thisminute.org/orchestration`
+steward — pattern catalog (271 patterns), FastAPI + SQLite social layer (votes, comments). Was named `rhizome`; renamed in nuclear cleanup pass on 2026-04-11. Same steward, same content, new path and URL.
+
+### tools (7 agents) — `llms.thisminute.org/tools`
+orchestrator, builder, curator, designer, librarian, skeptic, strategist — software directory with filled + unfilled slots, ~16K entries across 139 categories. Was named `toolshed`; renamed in nuclear cleanup pass on 2026-04-11. Curator owns the unfilled slots concept (was crucible/ideas).
+
+### dbt.thisminute.org (no agents)
+Single-file static DBT (Dialectical Behavior Therapy) diary card app — encrypted, private, in `~/projects/dbt.thisminute.org/index.html`. Recently added onboarding wizard, calendar view, emotion filters, accessibility tweaks. Not a multi-agent project; user maintains it directly.
 
 ### balatro (5 agents)
 orchestrator, player, analyst, librarian, api-developer — LLM autopilot mod for Balatro. Pivoted to Claude-as-player architecture. Lua/Steamodded mod + TCP server + cmd.py CLI. Playbook-based knowledge, no forum. NO AUTOPLAY constraint.
@@ -63,8 +70,8 @@ steward, builder, skeptic — Clash, a 3-faction multiplayer RTS in Bevy 0.15 (R
 ### singularity-forge (retired)
 Was a forge that scanned the toolshed for software gaps and created projects to fill them. Retired 2026-04-09 — premise that meaningful software gaps exist turned out to be wrong.
 
-### arc-agi (5 agents)
-orchestrator, player, analyst, skeptic, librarian — LLM agent for ARC-AGI-3 interactive puzzles. Claude-as-player architecture: TCP server + cmd.py CLI + play.py supervisor. Playbook-based knowledge, checkpoint state. Cycle 6, 3 levels solved.
+### arc-agi (12 agents)
+orchestrator, player, analyst, skeptic, librarian + 7 pipeline agents (pipeline_planner, pipeline_perception, pipeline_explorer, pipeline_analyst, pipeline_troubleshooter, pipeline_reviewer, pipeline_skeptic) — LLM agent for ARC-AGI-3 interactive puzzles. Architecture has evolved beyond the original Claude-as-player model: now uses agent.py + game_manager.py for batch runs alongside cmd.py for exploration. Pipeline approach added for structured perception → planning → execution. AGENTS.md still documents only the original 5 agents — pipeline agents undocumented at top level. ~130+ player runs across 13+ games, best scores up to 45.93 on ft09. No git tracking.
 
 ### agent-forge (template, not active)
 forgemaster, assayer, smith, keeper — these are template roles, not active agents. agent-forge is the generic default forge that other forge instances (like this one) are derived from. It holds the canonical patterns and role templates. It doesn't run cycles — it gets maintained when patterns evolve.
