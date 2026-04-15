@@ -1,349 +1,352 @@
 # Cross-Project Agent System Audit
 
-**Date**: 2026-04-05
-**Type**: Full ecosystem scan (11 projects + 1 template)
-**Previous audit**: 2026-03-26 (never committed — still uncommitted in forge working tree)
+**Date**: 2026-04-15
+**Type**: Full ecosystem scan — rewritten from scratch against post-rebrand structure
+**Previous audit**: 2026-04-05 (with 2026-04-11 forgemaster update note)
+**Audit author**: assayer
+
+---
 
 ## Executive Summary
 
-10 days since last audit. Cycles 61-90 in the forge log are labeled dormant monitoring cycles, and that matches reality: **no project has committed work since 2026-03-19** (ops) — an 18-day commit freeze across the ecosystem. But "no commits" does not mean "no activity":
+10 days since the last audit date; 4 days since the forgemaster's 2026-04-11 update note. This audit is a ground-up rewrite as the previous assayer requested.
 
-- **arc-agi pivoted architecture**: added `agent.py` (761 lines, Anthropic Messages API direct) + `game_manager.py` (in-process arc-agi SDK, no TCP server). The "Claude-as-player" + TCP + cmd.py architecture described in AGENTS.md is now partially obsolete. player.md was modified 2026-04-02 — **the most recent activity in the entire ecosystem.**
-- **arc-agi stale files resolved** (per last audit's request): `builder.md` and `play-operator.md` deleted; librarian agent removed old dead code; memory/librarian.md documents the cleanup.
-- **arc-agi playbook consolidated**: 5 separate files (strategy.md, action-effects.md, game-catalog.md, mechanics.md, README.md) → one `playbook/playbook.md` (172 lines), distilled from 130+ sessions across 25 games. Added `playbook/games/wa30.md` as first per-game file.
-- **sts2 architecture docs still frozen** at cycle 37 (2026-03-14). No activity in working tree since March 15. The reconciliation flagged in the previous audit has not happened.
-- **Forge patterns out of sync with template**: `agent-forge/patterns/` has two new patterns (`librarian.md`, `playbook.md`) created 2026-03-27 that are absent from `thisminute-forge/patterns/`. This is a reverse drift — the upstream template received patterns that should flow back into this forge's active library.
-- **Three forge pattern files** (`checkpoint.md`, `external-validation.md`, `first-run.md`) still untracked after 10 days — previous audit flagged them, they never got committed. The previous audit itself is also still uncommitted.
-- **singularity-forge still dormant** since 2026-03-22 (last memory update). No new projects in `~/projects/singularity/`. Still 43 projects, unchanged.
+Major changes since 2026-04-05:
 
-The "uncommitted work everywhere" finding from the last audit now extends to "uncommitted work everywhere AND nobody committed for nearly three weeks." The ecosystem is in a deep quiet phase.
+- **Commit freeze broken**: ops committed twice today (2026-04-15). dbt.thisminute.org also committed today. llms.thisminute.org/orchestration/tools committed on 2026-04-11. The ecosystem is no longer entirely frozen — though thisminute, balatro, sts2, and rts remain dormant.
+- **Site rebrand complete**: `forge.thisminute.org/` repo is orphaned; `llms.thisminute.org/` is the live site. Rhizome renamed to orchestration; toolshed renamed to tools. Both renames were nuclear-style — no redirects, localStorage keys reset. A VM-side migration is queued in `ops/DEPLOY_QUEUE.md`.
+- **arc-agi grew to 12 agents**: 7 pipeline agents added (pipeline_planner, pipeline_perception, pipeline_explorer, pipeline_analyst, pipeline_troubleshooter, pipeline_reviewer, pipeline_skeptic). AGENTS.md still documents only the original 5. Pipeline subsystem is active and well-structured — pipeline.py is 39,381 bytes updated 2026-04-11, pipeline_planner.md updated 2026-04-11. **Major doc debt.**
+- **Forge self-drift resolved**: previous audit flagged untracked pattern files and out-of-sync agent-forge patterns. Commit 3f2a401 ("Commit forge backlog") resolved all of it. Forge is now clean — no untracked files, patterns match agent-forge template exactly.
+- **rts grew to 4 agents**: `balancer.md` added since last audit's registry (which listed 3). AGENTS.md reflects this with steward, builder, skeptic, balancer.
+- **dbt.thisminute.org active today**: Not a multi-agent project (single encrypted HTML file), but has two commits today (vault support, lock screen rework). Registry correctly lists it as "Static / 0 agents."
+- **singularity-forge retired**: commit 29f34b7 ("Retire singularity-forge"). Premise was wrong. Removed from active tracking.
 
 ---
 
 ## Pattern Adoption Matrix
 
-| Pattern | thisminute | toolshed | forge.thisminute.org | rhizome | ops | sts2 | balatro | rts | singularity-forge | recipe-scaler | arc-agi |
-|---------|-----------|----------|---------------------|---------|-----|------|---------|-----|-------------------|---------------|---------|
-| Standalone PROTOCOL.md | Yes | Yes | No | No | No | No | No | No | No | No | No |
-| AGENTS.md (separate from CLAUDE.md) | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
-| Slim AGENTS.md + ref/ docs | Yes | No (~108 lines) | No | No | No | No | No | No | No | No | Partial (playbook/ serves as ref) |
-| Timestamp in startup | Yes | Yes | N/A | N/A | N/A | No (checkpoint) | No | N/A | N/A | N/A | No (checkpoint) |
-| Shutdown reflection | Yes (orchestrator) | Partial | No | No | No | No | No | No | No | No | No |
-| Keeper feedback loop | Yes (librarian) | Yes (librarian) | No | No | No | No | Partial (librarian defined) | No | No | No | Partial (librarian defined + ran once) |
-| Role file ref doc routing | Yes | No | No | No | No | No | Yes (player → playbook/) | No | No | No | Yes (player → playbook/) |
-| Forum voting minimums | Yes (2 votes) | Yes (2 votes) | No | No | No | No | No | No | No | No | No |
-| Agent role files in agents/ | Yes (11) | Yes (7) | Yes (3) | Yes (1) | Yes (2) | Yes (9, stale) | Yes (5) | Yes (3) | Yes (4) | Yes (1) | Yes (5) |
-| Steward bootstrap | N/A | N/A | N/A | Yes | Yes (variant) | N/A | N/A | Yes | N/A | Yes | N/A |
-| Challenge loop (skeptic+strategist) | Partial (both exist, no explicit sequencing) | Yes | Yes (skeptic only) | No | No | Yes (skeptic, stale) | No (skeptic removed) | Yes (skeptic) | Yes (skeptic, no strategist) | No | Yes (skeptic defined, never activated) |
-| Checkpoint-as-protocol | No | No | Yes (.claude/checkpoint.md) | No | No | Yes (.claude/iteration_checkpoint.md, frozen) | Yes (iteration_checkpoint.md, stale at cycle 15) | No | No | No | Yes (.claude/checkpoint.md, cycle ~6) |
-| Playbook (shared knowledge) | No | No | No | No | No | No | Yes | No | No | No | Yes |
-| Librarian (proactive maintenance) | Partial (via keeper/feedback.md) | Yes (named librarian) | No | No | No | No | Yes | No | No | No | Yes (ran once, `memory/librarian.md`) |
-| External validation | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | Yes (honest-assessment.md) | N/A | No (still needed) |
+Columns reflect current project names. Orphaned/retired projects omitted.
 
-*Note on new rows: `Playbook` and `Librarian` rows added this audit. Pattern files for these exist in `agent-forge/patterns/` but not yet in `thisminute-forge/patterns/` — see Flagged Patterns and Top-Priority Actions.*
+| Pattern | thisminute | llms | orchestration | tools | ops | sts2 | balatro | rts | arc-agi | recipe-scaler |
+|---------|-----------|------|--------------|-------|-----|------|---------|-----|---------|---------------|
+| Standalone PROTOCOL.md | Yes | No | No | No | No | No | No | No | No | No |
+| AGENTS.md (separate from CLAUDE.md) | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Slim AGENTS.md + ref/ docs | Yes (ref/ exists) | No (all inline) | No | No | No | No | No | No | No | No |
+| Timestamp in startup | Yes | No (checkpoint) | No | No | No | No (checkpoint) | No | No | No | No |
+| Shutdown reflection | Yes (orchestrator) | No | No | No | No | No | No | No | No | No |
+| Keeper feedback loop | Yes (librarian) | No | No | Yes (librarian) | No | No | Partial (librarian defined, active) | No | Partial (librarian ran once, memory/librarian.md) | No |
+| Role file ref doc routing | Yes (backend.md, frontend.md) | No | No | No | No | No | Yes (player → playbook/) | No | Yes (player → playbook/) | No |
+| Forum voting minimums | Yes (2 votes min) | No | No | No | No | No | No | No | No | No |
+| Agent role files in agents/ | Yes (11) | Yes (3) | Yes (1) | Yes (7) | Yes (2) | Yes (9, stale cycle 37) | Yes (5) | Yes (4) | Yes (12 — 5 core + 7 pipeline) | Yes (1) |
+| Steward bootstrap | N/A | N/A | Yes | N/A | Yes (variant) | N/A | N/A | Yes | N/A | Yes |
+| Challenge loop (skeptic+strategist) | Partial (both exist, no explicit sequencing) | Partial (skeptic only) | No | Yes | No | Yes (skeptic, stale) | No (skeptic removed) | Yes (skeptic) | Yes (skeptic defined + pipeline_skeptic) | No |
+| Checkpoint-as-protocol | No | Yes (.claude/checkpoint.md, active — session 10) | No | No | No | Yes (.claude/iteration_checkpoint.md, frozen cycle 37) | No (old checkpoint at root, stale cycle 15) | No | Yes (.claude/checkpoint.md, cycle ~130+ sessions) | No |
+| Playbook (shared knowledge) | No | No | No | No | No | No | Yes (9 files) | No | Yes (playbook.md + games/) | No |
+| Librarian (proactive maintenance) | Partial (via keeper/feedback.md) | No | No | Yes (named librarian, active memory) | No | No | Yes (named librarian, active memory) | No | Yes (ran once, memory/librarian.md) | No |
+| External validation | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | No (still needed) | N/A |
 
 ---
 
 ## Maturity Levels
 
-| Project | Agents | Level | Change | Notes |
-|---------|--------|-------|--------|-------|
-| **thisminute** | 11 | **Full** | — | Dormant since v128 (2026-03-17, 19 days). Agent system healthy. |
-| **toolshed** | 7 | **Full** | — | Dormant. Last activity 2026-03-21. Curator memory still 928 lines (stable 3 audits). |
-| **forge.thisminute.org** | 3 | **Established** | — | Dormant since 2026-03-22. Checkpoint unchanged. Orchestrator memory still a stub (2026-03-14). |
-| **balatro** | 5 | **Established+** | — | Dormant since 2026-03-25. Restructuring settled — all 5 agents, playbook, memory intact. |
-| **arc-agi** | 5 | **Structured+** | ↑ | Architecture pivot in progress. Stale files cleaned. Playbook consolidated. Active until 2026-04-02. |
-| **sts2** | 9 | **Structured** | — | Still frozen. Architecture-docs mismatch unresolved. Last touch 2026-03-15. |
-| **singularity-forge** | 4 | **Structured** | — | Dormant since 2026-03-22. Memory files now present (4 files, 193 lines). |
-| **rhizome** | 1 | **Minimal** | — | Dormant. Last activity 2026-03-15. Steward memory stable. |
-| **ops** | 2 | **Minimal+** | — | Dormant. Last commit 2026-03-19. Security review doc present. |
-| **rts** | 3 | **Minimal+** | — | Dormant. Last code change 2026-03-25 (net.rs). Heavy uncommitted work carried forward 2 audits. |
-| **recipe-scaler** | 1 | **New** | — | Never committed. Unchanged since 2026-03-15. |
+| Project | Agents | Level | Change | Last Commit | Days Dormant |
+|---------|--------|-------|--------|-------------|-------------|
+| **thisminute** | 11 | **Full** | — | 2026-03-17 | 29 days |
+| **tools** | 7 | **Full** | — | 2026-04-11 | 4 days |
+| **llms.thisminute.org** | 4 | **Established** | — | 2026-04-11 | 4 days |
+| **balatro** | 5 | **Established+** | — | 2026-03-16 | 30 days |
+| **arc-agi** | 12 | **Established** | ↑ | N/A (untracked) | N/A |
+| **sts2** | 9 | **Structured** | — | 2026-03-14 | 32 days |
+| **rts** | 4 | **Minimal+** | — | 2026-03-17 | 29 days |
+| **orchestration** | 1 | **Minimal** | — | 2026-04-11 | 4 days |
+| **ops** | 2 | **Minimal+** | — | 2026-04-15 | 0 days (active today) |
+| **dbt.thisminute.org** | 0 | **Static** | — | 2026-04-15 | 0 days (active today) |
+| **recipe-scaler** | 1 | **New** | — | never | — |
+| **agent-forge** | 4 | **Template** | — | (synced) | — |
 
-**arc-agi upgraded from Structured → Structured+** on the strength of: cleaned agent files (matches AGENTS.md 5 agents), librarian ran and documented its cleanup in memory, playbook consolidation, 130+ player sessions recorded, active checkpoint. Still missing: proven multi-agent feedback loop (analyst + skeptic never ran, per memory evidence).
-
----
-
-## Changes Since Last Audit (2026-03-26)
-
-### Committed work
-
-**None.** Last commit on any tracked project was 2026-03-19 (ops: "Log dbt deploys"). This is the longest commit gap in the ecosystem's audit history.
-
-### Uncommitted activity by project
-
-**arc-agi — active until 2026-04-02:**
-- `agents/builder.md` and `agents/play-operator.md` deleted (per last audit's action item)
-- `memory/librarian.md` added (2026-03-26) — documents dead-code cleanup; removed `main.py`, `quickstart.py`, `engine.py`, `solver.py`, `bot/reason.py`
-- `playbook/` restructured: old multi-file playbook replaced with single `playbook.md` (172 lines) distilled from 130+ sessions + `playbook/games/wa30.md`
-- New scripts: `agent.py` (761 lines, phase-based Anthropic Messages API agent), `game_manager.py` (729 lines, in-process SDK wrapper — replaces server.py + cmd.py combination), `knowledge.py` (188 lines, system prompt builder), `submit.py` (169 lines, scorecard submission)
-- `.claude/checkpoint.md` dated 2026-03-27 with session "~130+ player runs + 7 analyst runs" — records scores for 13 games (best: ft09 45.93, vc33 35.71)
-- `agents/player.md` modified 2026-04-02 — now references `flowchart-output/` directory (PLANNING/OBSERVATION/EXECUTION/EXPLORATION templates), contradicts old cmd.py-centric workflow
-
-**balatro — dormant since 2026-03-25:**
-- All Cycle 84 restructuring uncommitted work still present (deletions of 8 old agent files, additions of player/librarian/api-developer, playbook/, cmd.py, etc.)
-- `iteration_checkpoint.md` in project root still describes cycle 15 (2026-03-17) with OLD architecture (runner.py, mcp_server.py, Sonnet+Opus API calls) — contradicts the new structure
-- 12 memory files stable (last one edited 2026-03-24)
-- No new files since last audit
-
-**rts — dormant since 2026-03-25:**
-- Still has uncommitted rename `AGENTS.md → SPEC.md`, plus creation of new `AGENTS.md`
-- Untracked: new `DESIGN.md`, `LORE.md`, `LORE copy.md`, new agent files (builder.md, skeptic.md), memory files, asset directory, 7 new source files (bubble.rs, galaxy.rs, hunger_mat.rs, polyhedra.rs, proof_edge.rs, space_bg.rs)
-- No changes since last audit — work has been frozen for 10 days
-
-**forge.thisminute.org/toolshed/rhizome — dormant since 2026-03-22:**
-- Work identical to last audit — no progress
-- Last file touch in toolshed was 2026-03-21 (FORUM.md, curator memory)
-
-**sts2 — frozen since 2026-03-15:**
-- Working tree state identical to last audit
-- bot_vm/ (Python) still present as untracked
-- All 9 agent role files still dated 2026-03-14
-- Checkpoint still at cycle 37
-
-**singularity-forge — dormant since 2026-03-22:**
-- 4 memory files (assayer, forgemaster, skeptic, smith) present as untracked directory — same state as last audit
-- No audit updates since 2026-03-17
-- Still 43 projects in `~/projects/singularity/`
-
-**ops, thisminute, rhizome, recipe-scaler — no activity.**
-
-### Forge actions this cycle (provisional — this audit has not yet been committed)
-
-- **Confirmed**: arc-agi stale-files issue resolved independently by a librarian session (2026-03-26)
-- **Discovered**: arc-agi mid-pivot to LLM-as-API architecture (agent.py + game_manager.py)
-- **Discovered**: agent-forge template has `librarian.md` and `playbook.md` patterns (created 2026-03-27) that never propagated back to thisminute-forge
-- **Flagged**: ecosystem-wide 18-day commit freeze
+**arc-agi upgraded from Structured+ → Established.** Rationale: the project now has 12 well-structured agent role files, an active checkpoint with extensive session history, a consolidated playbook, a documented librarian pass, and a working pipeline subsystem with dedicated role files. What it lacks for Established+: a proven end-to-end multi-agent feedback loop (analyst → playbook update → player improvement loop with documented evidence). Also, AGENTS.md only documents 5 of the 12 agents — the pipeline subsystem is invisible at the top level. Established is earned by structure and evidence; Established+ requires the self-improving loop to have run and documented its output.
 
 ---
 
-## Per-Project Assessment & Upgrade Plans
+## Per-Project Assessment
 
-### arc-agi — Structured+ (monitor pivot)
+### thisminute — Full (dormant, 29 days)
 
-**Status change**: ↑ from Structured. Earned the upgrade by:
-- Cleaning the stale agent files (direct response to last audit)
-- Running a librarian session and documenting its work in `memory/librarian.md`
-- Consolidating the playbook into a single curated document
-- Maintaining an active checkpoint across 130+ sessions
+**Status**: Unchanged. Agent system is the most mature in the ecosystem. PROTOCOL.md, FORUM.md, librarian, keeper feedback loop, ref/ docs, 11 well-structured role files. Last commit 2026-03-17 (v128: LLM geocoding).
 
-**Unresolved: architecture ambiguity.** The project now has two co-existing architectures:
+**Concern**: 29 days without a commit on an active news aggregation platform is the longest gap in its history. The 106-feed + 13-API pipeline presumably still runs on the VM, but no development activity. Not actionable by the forge — surface to user.
 
-1. **Architecture A (documented in AGENTS.md, described in player.md's command block)**: `play.py` supervisor → Claude Code CLI sessions → `cmd.py` + `server.py` (TCP).
-2. **Architecture B (newer, more recently modified)**: `agent.py` (Anthropic Messages API direct) + `game_manager.py` (in-process SDK wrapper) + `knowledge.py` (prompt builder) + flowchart-output/ templates.
+**Action**: None for the agent system. Dormancy note in summary.
 
-Evidence Architecture B is the active path:
-- `agent.py` last modified 2026-03-31, `knowledge.py` 2026-03-30 — newer than any TCP-stack file (`server.py`, `play.py` last touched 2026-03-25)
-- `agents/player.md` (modified 2026-04-02) references the flowchart-output directory and phase-based PLANNING/OBSERVATION/EXECUTION/EXPLORATION loops that correspond to `agent.py`'s phase calls
-- But `player.md`'s own command block still shows `cmd.py` usage
+---
 
-The checkpoint (2026-03-27) predates this pivot — it references server ports 19401-19410, tier_check.py, .prev_grid.npy, all TCP-stack artifacts.
+### llms.thisminute.org — Established (active last 4 days)
 
-**Action**: On next active cycle, pick a canonical architecture. Options:
-- **(A)** Keep Claude-as-player via cmd.py; delete agent.py, game_manager.py, knowledge.py, submit.py as an abandoned experiment.
-- **(B)** Commit to LLM-as-API via agent.py; update AGENTS.md, deprecate play.py + cmd.py + server.py, update player.md to describe flowchart templates instead of cmd.py commands.
-- **(C)** Explicitly document both as "two modes" — one for exploratory play (cmd.py), one for batch scoring runs (agent.py).
+**Status**: Rebrand complete as of 2026-04-11. Six sections: home, models, context, orchestration, tools, forge. Checkpoint (session 10) documents the URL-flatten restructure and nuclear cleanup. Orchestrator memory is rich (user preferences, nuclear-mode policy, harness tie-in philosophy).
 
-**Priority: High when active.** Current docs actively mislead sessions.
+**What it has**: 3 agent role files, checkpoint-as-protocol, active memory (orchestrator.md), correct deploy queue discipline (routes through ops).
 
-**Other notes**:
-- `memory/librarian.md` is the first real proof that the librarian pattern works in a project. Worth citing when writing the librarian pattern for thisminute-forge.
-- `analyst.md` and `skeptic.md` still never activated — the checkpoint mentions "7 analyst runs" but no analyst memory file exists. If the analyst ran, its output went into playbook consolidation, which is the right outcome — but the role file should explicitly say "analyst work product = playbook updates."
-- External validation still needed — checkpoint reports scores but makes no attempt to compare against other published ARC-AGI-3 results or the anonymous leaderboard.
+**What it lacks**: shutdown reflection, keeper feedback loop, ref/ docs per section, forum. These are reasonable gaps for a content/education site — the checkpoint does the coordination work. No PROTOCOL.md is expected.
 
-### sts2 — Structured (unchanged, regression risk)
+**Upgrade path**: The `forge/` section has a pending rename ("user wants to rename forge too but idk what to" — still unresolved per checkpoint). This is a UX decision, not an agent system gap. Not an upgrade action.
 
-The reconciliation flagged in the previous audit has not happened. 10 days later, the working tree is byte-for-byte the same. This is the third consecutive audit that has flagged sts2's architecture-docs mismatch as "High priority when active, N/A while dormant."
+**Action**: Low priority. Site is healthy and active. If the team grows past 3 roles, consider adding a FORUM.md or formalizing the skeptic's challenge scope.
 
-**New consideration**: if sts2 stays dormant another cycle or two, the best action may be to formally deprecate it rather than keep queuing reconciliation work. The project has been architecturally stuck since mid-March. A fourth "carried forward" action item is a signal the work isn't going to happen organically.
+---
 
-**Action**: No change this cycle — still dormant. But on the next dormant audit, consider asking whether sts2 should be retired or explicitly mothballed.
+### orchestration — Minimal (active last 4 days)
 
-### balatro — Established+ (stable, checkpoint drift)
+**Status**: Renamed from rhizome on 2026-04-11. Single steward. Memory file documents the rename and the harness-built-in pattern framing. 271 patterns. VM-side migration still queued in ops.
 
-Restructuring is stable. All 5 agents present with role files. Playbook intact (793 lines across 9 files). Memory directory has 12 files.
+**What it has**: steward + memory, correct minimal setup for a pattern catalog.
 
-**Issue**: `iteration_checkpoint.md` at project root is dated 2026-03-17 cycle 15 and describes the OLD architecture (runner.py, mcp_server.py, Sonnet+Opus multi-tier API calls). The restructuring deleted that entire code path. The checkpoint actively misleads.
+**What it lacks**: nothing unreasonable for its scale and role. The steward pattern is the right fit here.
 
-**Action**: Delete or rewrite `iteration_checkpoint.md` to reflect the Claude-as-player architecture. **Priority: Medium** (low impact while dormant, but first session to resume will read this file and get confused).
+**One gap**: AGENTS.md documents "orchestration steward" but doesn't say how a new session should know the VM migration is still pending. The steward's memory documents it, but a new session without memory might run deploy.sh against stale VM paths. The deploy queue in ops is the right place — just confirm it's there.
 
-### forge.thisminute.org — Established (carried forward)
+**Action**: Verify ops DEPLOY_QUEUE.md has the orchestration+tools VM migration. Low priority.
 
-Checkpoint unchanged, orchestrator memory still a stub. Dormant. Same action as last audit — **Medium priority, carried**.
+---
 
-### toolshed — Full (carried, stable)
+### tools — Full (active last 4 days)
 
-Curator memory at 928 lines is stable for 3 audits. Treat as natural size. **No action.**
+**Status**: Renamed from toolshed on 2026-04-11. 7-agent team stable. Memory files across all 7 agents (1,480 lines total — healthy distribution). Curator memory at 928 lines, stable for multiple audits. 16,247 entries in catalog as of cycle 10.
 
-### rhizome — Minimal (stable)
+**What it has**: 7 role files, active memory per agent, librarian defined and active, challenge loop (skeptic), orchestrator coordinates.
 
-Dormant, correct size. **No action.**
+**What it lacks**: standalone PROTOCOL.md (uses checkpoint-as-protocol), shutdown reflection, forum voting minimums. These are reasonable gaps — the team runs smoothly without them.
 
-### thisminute — Full (stable, long dormancy)
+**Action**: None. This is a healthy Full-equivalent system without protocol formalism. The curator memory size is stable — no bloat concern.
 
-19 days without activity. Agent system healthy. **No action.**
+---
 
-### ops — Minimal+ (stable)
+### ops — Minimal+ (active today)
 
-Last commit 2026-03-19. Security nginx hardening still pending from prior audits. **Low priority, carried.**
+**Status**: Committed twice today (2026-04-15). Two agents: steward and security. AGENTS.md is the most detailed ops doc in the ecosystem — lists all 6 deployable projects with repo, local path, and VM path. Recent commits are deploy queue management for dbt.thisminute.org.
 
-### rts — Minimal+ (dormant heavy-uncommitted)
+**What it has**: 2 role files, memory files (steward.md, project_toolshed.md), active deploy queue process.
 
-No change since last audit. 7 new source files, renamed AGENTS.md → SPEC.md, new agent files, memory files — all still uncommitted for 10+ days. This is a growing risk of state loss if anything corrupts the working tree.
+**What it lacks**: a named security pattern is present but the nginx hardening work flagged in prior audits is still pending. No explicit checkpoint. Memory docs are project-state records, not agent learnings.
 
-**Action**: When rts resumes, the steward should either commit current work or consciously abandon it. **Priority: High on resume, N/A while dormant.**
+**Note**: The VM-side migration for orchestration/tools (renaming `/opt/rhizome` → `/opt/orchestration`, `/opt/toolshed` → `/opt/tools`, systemd unit renames, nginx location blocks) is queued but not yet run. This is a moderate ops risk — the live site at `forge.thisminute.org` may still be serving from old paths until the migration runs.
 
-### singularity-forge — Structured (stuck)
+**Action**: Medium priority — run the VM migration. Not a forge concern directly, but surfaced here because it blocks the "rebrand complete" status from being true end-to-end.
 
-Memory files present (4 files, 193 lines total), created 2026-03-22 per file dates. But:
-- No audit updates since 2026-03-17
-- No new projects since 2026-03-17 (still 43 projects in the directory)
-- The project was supposed to replace bellows as an active chained-forge workflow
+---
 
-The "Structured" rating understates the concern — singularity-forge has not meaningfully run in nearly three weeks. If it's meant to be an active agent system scanning the toolshed for gaps, it isn't.
+### dbt.thisminute.org — Static (active today)
 
-**Action**: Flag for user attention. Either it should be running a cycle or the scheduled monitoring that would trigger its cycles has stopped. **Priority: Medium — ask the user whether singularity-forge is expected to be active.**
+**Status**: Single-file encrypted DBT diary card app. No agents. User maintains directly. Committed twice today. Not a multi-agent project — correct registry status.
 
-### recipe-scaler — New (still dormant)
+**Action**: None. Not in scope for agent system audit beyond confirming the registry entry is accurate.
 
-Never committed. Unchanged. **No action.** Consider retiring if still dormant at next audit.
+---
+
+### balatro — Established+ (dormant, 30 days)
+
+**Status**: 5 agents (orchestrator, player, analyst, librarian, api-developer). Playbook intact (9 files). Memory directory has 11+ files. Last commit 2026-03-16.
+
+**Unresolved from previous audit**: `iteration_checkpoint.md` at project root is dated 2026-03-17 cycle 15 and describes the old MCP/runner.py architecture. This file is still present and still misleads. Balatro has since restructured to Claude-as-player (cmd.py + TCP server + playbook), but the checkpoint predates that pivot and was never updated.
+
+**Risk**: any session that opens `iteration_checkpoint.md` as its state anchor will think the project is running runner.py and mcp_server.py. This is the third audit to flag it.
+
+**Action**: Delete or rewrite `iteration_checkpoint.md`. **Priority: Medium, escalating.** Three audits of "carried forward" is a signal. If balatro resumes without fixing this, a session will build on the wrong foundation.
+
+---
+
+### sts2 — Structured (dormant, 32 days)
+
+**Status**: 9 agent role files all dated 2026-03-14. Checkpoint at cycle 37 (mid-combat blocker). No activity since 2026-03-15. This is the fourth consecutive audit flagging sts2 as frozen with an unresolved architecture-docs mismatch.
+
+**What the mismatch is**: sts2 has a Python `bot_vm/` directory (untracked) that represents a newer VM-based architecture, but all role files describe the original Lua/mod architecture from cycle 37. The reconciliation has never happened.
+
+**Decision point**: sts2 has been dormant for 32 days across 4 audit cycles. The forge should stop carrying "reconcile when active" as a perpetual action item. Two options:
+
+1. **Mothball explicitly**: Add a `STATUS.md` at the project root: "Paused at cycle 37. bot_vm/ is an uncommitted experiment. Resume by reading cycle.md and the checkpoint." Let future sessions find this instead of stale role files.
+2. **Retire**: If the user has no plans to return to sts2, remove it from active registry and archive.
+
+**Action**: **Forgemaster should ask the user** — mothball or retire? **Priority: High** (it has been Low/N/A for three audits; it now needs a decision).
+
+---
+
+### rts — Minimal+ (dormant, 29 days)
+
+**Status**: Registry now shows 4 agents (steward, builder, skeptic, balancer) — `balancer.md` was added since the last audit. Git status shows significant uncommitted work: AGENTS.md modified, SPEC.md added, steward.md modified, memory/MEMORY.md modified, 20+ source files modified/deleted.
+
+**Risk**: This uncommitted work has been sitting for 29 days. `src/menu.rs` is deleted in the working tree but not committed — if anything goes wrong (hardware, accidental reset), that deletion and all the other working-tree changes are lost.
+
+**Action**: When rts resumes, commit or consciously discard current work before building on it. **Priority: High on resume.** The forge cannot do this — it requires a developer decision. But flag it clearly.
+
+---
+
+### arc-agi — Established (untracked, most active project)
+
+**Status**: 12 agents, no git tracking. The pipeline subsystem (7 agents) was added between 2026-04-08 and 2026-04-11 and represents the most active development in the ecosystem. `pipeline.py` (39,381 bytes) and `test_stage.py` (22,702 bytes) are the primary new files. `pipeline_planner.md` (updated 2026-04-11) is the most recently modified agent file in the ecosystem.
+
+**Architecture state**: arc-agi now has three operational modes:
+1. **Claude-as-player** (cmd.py + server.py + play.py): original mode, checkpoint from 2026-03-27 references it
+2. **LLM-as-API** (agent.py + game_manager.py + knowledge.py): mid-tier API-calling mode, added ~2026-04-07
+3. **Pipeline** (pipeline.py + 7 pipeline agents): newest mode, perception → planning → execution pipeline for structured game-solving
+
+The checkpoint (2026-03-27) only documents Mode 1. Modes 2 and 3 are entirely undocumented at the AGENTS.md level.
+
+**AGENTS.md gap**: documents 5 agents, 12 exist. The 7 pipeline agents have role files that are well-written (pipeline_planner.md is 4,732 bytes with clear purpose, method, and output format). They just don't appear in AGENTS.md's agent table or architecture section.
+
+**What this means operationally**: any session that reads AGENTS.md to orient itself will not know the pipeline subsystem exists. They'll see the original Claude-as-player architecture and 5 agents. The pipeline work is invisible to top-level orientation.
+
+**Action**: Update AGENTS.md to document all 12 agents and describe all three modes. Update the checkpoint to reflect the pipeline architecture. **Priority: High — next active session will be confused.** Medium effort (reading the pipeline files + writing a coherent AGENTS.md update).
+
+**External validation**: arc-agi still lacks any comparison to published ARC-AGI-3 benchmarks. The checkpoint records best scores (ft09: 45.93, vc33: 35.71) but these are not contextualized against known approaches. Given the project generates scores and claims progress, external validation per `patterns/external-validation.md` is appropriate.
+
+---
+
+### recipe-scaler — New (never committed, 31+ days)
+
+**Status**: Unchanged from every prior audit. One steward role file. No commits. Project idea, CRUCIBLE_CONTEXT.md still present.
+
+**Action**: Retire unless the user has active plans. Keeping it in the registry adds noise without signal. **Priority: Low — but needs a decision.**
 
 ---
 
 ## Forge Self-Audit
 
-The thisminute-forge itself has drift:
+### Pattern library: clean
 
-1. **Three pattern files still untracked** after 10 days: `patterns/checkpoint.md`, `patterns/external-validation.md`, `patterns/first-run.md`. Previous audit flagged them for evaluation and integration; keeper never ran. All three are well-written and ready — should be committed.
+All 11 pattern files are present and in sync with `agent-forge/patterns/`. The previous audit's "untracked patterns" issue was resolved in commit 3f2a401. No pattern drift detected.
 
-2. **Two patterns exist in template but not forge**: `agent-forge/patterns/librarian.md` and `agent-forge/patterns/playbook.md` (both created 2026-03-27). These are the codification of the convergent patterns from balatro and arc-agi that the previous audit flagged as "worth monitoring." They should be copied from the template into `thisminute-forge/patterns/` and adapted with adoption-status tables reflecting current ecosystem usage.
+### Forge working tree: clean
 
-3. **Previous audit itself uncommitted**: `audits/current.md` and its associated `agents.md`/`agents/assayer.md` changes from 2026-03-26 are still staged but uncommitted. This audit will overwrite `current.md` and those changes will need to be committed together.
+`git status` reports no uncommitted work. The forge itself is in the cleanest state seen across all audits.
 
-4. **No first-run wizard invocation yet**: `first-run.md` exists but was never tested against a fresh forge instance. Consider a smoke test against agent-forge before declaring the pattern stable.
+### Registry accuracy
 
-**Action**: Full keeper sweep needed — commit the previous audit's uncommitted work + this audit + the three pattern files + copy the two new patterns from the template. **Priority: High.**
+`agents.md` is up to date for most projects. One structural issue: the Role Lists section still uses old names:
+- "rhizome (1 agent) — `forge.thisminute.org/rhizome`" should read "orchestration (1 agent) — `llms.thisminute.org/orchestration`"
+- "toolshed (7 agents) — `forge.thisminute.org/toolshed`" should read "tools (7 agents) — `llms.thisminute.org/tools`"
+
+The Projects table at the top has been updated, but the Role Lists section below still has the old names. Minor inconsistency but worth a keeper pass.
+
+### agent-forge divergence: none
+
+Pattern sets are identical. No divergence.
 
 ---
 
 ## Flagged Patterns
 
-### Formalized in template but not yet in forge: Playbook + Librarian
+### 1. Pipeline subsystem as a pattern
 
-Both patterns were written into `agent-forge/patterns/` on 2026-03-27, presumably during a keeper or smith session that was never committed to thisminute-forge. Evidence they work:
+arc-agi has built a structured multi-stage pipeline with dedicated specialist agents per stage (perception → planning → execution → review → troubleshooting). Each pipeline agent has:
+- A single narrow responsibility with a clear output format
+- Explicit "you receive X, you output Y" contract
+- No loops or state — pure transform
+- A reviewer and skeptic at the end
 
-- **balatro**: has `playbook/` (9 files, 793 lines), dedicated `librarian` role, stable for 2 audits
-- **arc-agi**: has `playbook/` (consolidated 172-line doc + per-game files), dedicated `librarian` role, `memory/librarian.md` documents a real cleanup session
+This is distinct from the Hub-and-Spoke pattern (coordinator + workers) and the Challenge Loop (proposal + skeptic). It's a linear assembly pipeline with typed handoffs.
 
-**Action**: Copy `agent-forge/patterns/librarian.md` and `agent-forge/patterns/playbook.md` into `thisminute-forge/patterns/`, fill in the adoption-status tables, and update the pattern matrix above with proper rows. Already partially done in this audit (rows added, pattern files still to be copied).
+**Evidence it works**: pipeline_planner.md is 4,732 bytes of tightly-scoped spec; pipeline.py is 39,381 bytes of implementation; both updated 2026-04-11 showing active development. The pipeline was designed to solve a specific failure mode: Claude-as-player was inconsistent because context got polluted across steps. The pipeline isolates each cognitive stage into a fresh context.
 
-### Emerging but unresolved: Claude-as-Player vs LLM-as-API tension
+**Worth extracting**: Yes. Once arc-agi has run the pipeline end-to-end and measured score improvement, this should become a pattern. The handoff-document convention (each stage writes a structured handoff for the next) is the key extractable insight.
 
-The previous audit flagged "Claude-as-player" as a convergent architecture across arc-agi and balatro. Ten days later, arc-agi has partially abandoned it. The `agent.py` + `game_manager.py` path is a return to the classic "Python calls Anthropic API" pattern — specifically because:
+**Not ready yet**: wait for arc-agi to report pipeline scores before formalizing.
 
-- **Cost control**: 130+ sessions via Claude Code are expensive; API calls with prompt caching are cheaper
-- **Reproducibility**: batch runs against the scorecard API need deterministic invocation, not CLI sessions
-- **Structured output**: phase-based flowchart templates work better when the harness enforces them
+### 2. Harness-built-in roles as orchestration patterns
 
-This suggests the pattern isn't "Claude-as-player" in the universal sense — it's "Claude-as-player for exploration + LLM-as-API for execution." balatro and sts2 may eventually feel the same pressure.
+The orchestration steward added two patterns (2026-04-11) under a new framing: harness-native features (Claude Code's plan mode, Copilot's autopilot) are orchestration patterns that happen to ship inside the harness. The key insight — "orchestration doesn't require multiple LLM instances, it requires multiple context templates" — has wide implications for the pattern catalog.
 
-**Action**: Do not extract "Claude-as-player" as a formal pattern yet. The story is more nuanced. Revisit once arc-agi picks a canonical architecture.
+This is already in the orchestration section at `/orchestration/`. Not a new forge pattern per se, but worth flagging as a conceptual framing that should inform future pattern writing. When new patterns are extracted from arc-agi's pipeline or from other projects, ask: is this about context templates or about agent instances?
 
-### Confirmed working: Librarian as proactive-maintenance role
+### 3. Playbook as game memory (confirmed)
 
-`arc-agi/memory/librarian.md` is the first field evidence of a librarian doing real work: it lists files deleted, files kept with justification, and doc corrections. This is the behavior the pattern describes, with tangible output. Cite this file when finalizing the librarian pattern.
-
-### Risk: Ecosystem-wide commit freeze
-
-18 days since any commit anywhere. This is not "dormant" in the healthy sense — at least three projects (balatro, rts, arc-agi) have substantial uncommitted work. If a workstation incident happened today, that work would be lost. The forge cannot prevent this but should surface it clearly in audits.
-
-**Action**: Add "days since last commit" to the per-project table in future audits as an early warning.
-
----
-
-## Keeper Challenge Notes
-
-1. **The previous audit never committed.** Someone (a dormant session, an interrupted keeper) left `audits/current.md` and its sibling changes in the working tree. 10 days passed. This audit inherits that state. When committing this audit, also commit the three pattern files and the previous audit's agent registry changes in the same keeper session.
-
-2. **Agent-forge and thisminute-forge have diverged.** The template picked up `librarian.md` and `playbook.md` — the reverse of the usual flow (template → active forge). Someone was working on agent-forge directly on 2026-03-27. The thisminute-forge pattern library is now *behind* the template. This needs to be reconciled, and the reverse-direction sync protocol should be documented.
-
-3. **arc-agi deserves a rating ceiling conversation.** It's been upgraded to Structured+ but could plausibly reach Established on the next active cycle if the architecture pivot is finished cleanly and the analyst/librarian feedback loop runs end-to-end. The project has the most energy in the ecosystem right now and the most tangible proof that patterns work.
-
-4. **singularity-forge is a silent failure.** A forge that doesn't scan the toolshed or create projects is not doing its job. Previous audits counted it as Structured based on file presence; this audit should be explicit that the rating is purely structural — the operational status is "not running."
-
-5. **sts2 needs a deprecation conversation.** Three consecutive audits flagging the same "reconcile when active" action, with no activity. At some point the honest call is to retire it or archive the Python bot_vm/ work as a reference and rebuild from scratch. Not this audit, but flag it.
+Both arc-agi and balatro use `playbook/` as persistent cross-session game knowledge — distinct from `memory/` (agent learnings) and distinct from documentation. The pattern is in `patterns/playbook.md`. Arc-agi has consolidated to a single `playbook.md` + per-game files under `playbook/games/`. Balatro has 9 files (README, strategy, mechanics, jokers, bosses, blinds, consumables, mistakes, run_log). Two independent implementations, same structure, same function. Pattern is confirmed and formalized — no further action.
 
 ---
 
 ## Top-Priority Actions for Next Cycle
 
-Ordered by urgency. Smith and keeper should work through these in sequence.
+Ordered by urgency × ROI.
 
-### 1. Keeper: commit the forge backlog (High, Small)
+### 1. Smith: arc-agi AGENTS.md + checkpoint update (High, Medium)
 
-- Commit the previous audit's `audits/current.md` + `agents.md` + `agents/assayer.md` changes
-- Commit the three untracked pattern files (`checkpoint.md`, `external-validation.md`, `first-run.md`)
-- Commit this audit (which overwrites `current.md`)
-- Single coherent keeper commit or a small series
+- Read all 7 pipeline agent files in `agents/`
+- Read `pipeline.py` for the current pipeline architecture
+- Rewrite AGENTS.md's agent table to include all 12 agents
+- Add an "Architecture" section describing all three modes (Claude-as-player, LLM-as-API, Pipeline)
+- Update `.claude/checkpoint.md` to reflect current pipeline state
 
-### 2. Keeper: sync patterns from agent-forge template (High, Small)
+This is the highest-value action: arc-agi is the most active project, and every new session is starting blind on 7 agents and the entire pipeline subsystem.
 
-- Copy `agent-forge/patterns/librarian.md` → `thisminute-forge/patterns/librarian.md`
-- Copy `agent-forge/patterns/playbook.md` → `thisminute-forge/patterns/playbook.md`
-- Fill in adoption-status tables with current ecosystem data:
-  - Playbook: balatro (Yes), arc-agi (Yes, consolidated into one file)
-  - Librarian: toolshed (Yes, named "librarian"), balatro (Yes), arc-agi (Yes, ran once — cite `memory/librarian.md`)
-- Include a brief note about the reverse-sync (template → forge)
+### 2. Forgemaster: sts2 retirement decision (High, Small)
 
-### 3. Smith: arc-agi architecture reconciliation (High, Medium) — only if arc-agi resumes
+- Ask user: "sts2 has been dormant for 32 days across 4 audit cycles. Should we retire it, formally mothball it, or schedule a reconciliation session?"
+- If mothball: add `STATUS.md` at project root with state summary
+- If retire: update `agents.md` registry, strike the entry
 
-- Read `agent.py`, `game_manager.py`, `player.md`, `.claude/checkpoint.md` in full
-- Determine whether the project is committing to Architecture B (LLM-as-API) or retaining Architecture A (Claude-as-player)
-- Update AGENTS.md and player.md to match the canonical architecture
-- Delete dead code from whichever path is abandoned
-- Update the checkpoint if it's still referencing the old stack
+The "reconcile when active" action item has been carried forward 4 times. It is not going to happen organically.
 
-### 4. Smith: balatro checkpoint cleanup (Medium, Small)
+### 3. Smith: balatro checkpoint deletion/rewrite (Medium, Small)
 
-- Delete or rewrite `iteration_checkpoint.md` at balatro root — it describes cycle 15's old MCP architecture and actively misleads sessions about the project state
-- The checkpoint now lives implicitly in the playbook + memory files; decide whether a new checkpoint file is needed at all
+- Delete `iteration_checkpoint.md` at balatro project root (dated 2026-03-17, describes old MCP architecture)
+- The current architecture lives in the playbook + memory files
+- If a checkpoint is still useful, create a new one dated current reflecting the Claude-as-player / cmd.py architecture
 
-### 5. Forgemaster: ask user about singularity-forge (Medium, Small)
+This has been flagged 3 audits in a row. A new balatro session that reads this file will be misled.
 
-- It has been dormant for 14+ days with no new projects
-- The intended design is an active chained-forge workflow scanning the toolshed
-- Either it's supposed to be running and isn't, or the plan has changed — user clarification needed
+### 4. Keeper: fix agents.md Role Lists section (Low, Small)
 
-### 6. Forgemaster + keeper: retire-or-activate decisions (Low, batch)
+- Update "rhizome (1 agent) — `forge.thisminute.org/rhizome`" → "orchestration (1 agent) — `llms.thisminute.org/orchestration`"
+- Update "toolshed (7 agents) — `forge.thisminute.org/toolshed`" → "tools (7 agents) — `llms.thisminute.org/tools`"
 
-- recipe-scaler: still "New" with no commits 21 days after registration — retire or kickstart
-- sts2: third audit in a row with no progress — retire, mothball, or make reconciliation a top priority
-- rts: not retire, but the uncommitted state should be committed or consciously discarded on resume
+The Projects table is correct. The Role Lists section below still has the pre-rebrand names.
 
-### 7. Monitoring: ecosystem commit freeze (ongoing)
+### 5. Ops: run VM migration (Medium, Medium)
 
-- No commits in 18 days across the entire ecosystem
-- Not actionable by the forge directly, but flag in user summary
-- Add "days since last commit" to future audit tables
+The orchestration + tools rename (rhizome→orchestration, toolshed→tools) is complete in the repo but not yet on the VM. Until the migration runs, the live site may be serving from `/opt/rhizome` and `/opt/toolshed` paths. Check `ops/DEPLOY_QUEUE.md` for the migration block.
 
----
+### 6. Forgemaster: recipe-scaler retirement decision (Low, Small)
 
-*Audit author: assayer, 2026-04-05*
-*Method: direct working-tree inspection + git log + file mtime analysis. No project files were modified.*
+- Ask user: "recipe-scaler has never committed and has been in the registry for 30+ days. Retire or kickstart?"
+- If retire: remove from `agents.md`
+
+### 7. Monitor: thisminute commit freeze (Ongoing)
+
+- thisminute has not committed since 2026-03-17 (29 days). For an active news aggregation platform this is unusual — the VM presumably still runs, but no code changes. Not actionable by the forge but worth surfacing.
 
 ---
 
-## Update 2026-04-11 — significant ecosystem changes since this audit
+## Keeper Challenge Notes
 
-This audit is now stale on several "current state" claims. See `agents.md` for the canonical registry. Notable changes:
+1. **Forge is clean** — the previous assayer's "commit the forge backlog" action happened (commit 3f2a401). Acknowledging that the feedback loop works: audit flags something, keeper acts.
 
-- **Major site rebrand + reorganization**: forge.thisminute.org content moved to `~/projects/llms.thisminute.org/` (directory name predates rebrand). The site is now organized around the agent anatomy diagram itself: home (anatomy flowchart) → /models/ → /context/ → /orchestration/ (was rhizome) → /tools/ (was toolshed) → /forge/. New visual identity (Fredoka, watermelon-pink + mint pastel, casual essayist voice). Two new content sections: /models/ (~60 model catalog) and /context/ (statelessness explainer with embedded token demo). crucible/ deleted, /llms/llm/ deleted (absorbed into /context/). Old `~/projects/forge.thisminute.org/` repo orphaned at the 2026-04-09 commit.
-- **Renames**: rhizome → orchestration, toolshed → tools. Same content, same agents, new paths. Nuclear cleanup: localStorage keys reset, API endpoints renamed, deploy script paths updated.
-- **dbt.thisminute.org added**: encrypted static DBT diary card app (single-file, no agents, user maintains directly). Recent activity: onboarding wizard, calendar view, accessibility tweaks.
-- **arc-agi grew from 5 to 12 agents**: added 7 pipeline agents (planner, perception, explorer, analyst, troubleshooter, reviewer, skeptic). Architecture evolved beyond original Claude-as-player: now has agent.py + game_manager.py for batch runs alongside cmd.py for exploration. AGENTS.md still documents only the original 5 — pipeline agents undocumented at top level. Project remains untracked by git. ~130+ player runs across 13 games, best score 45.93 on ft09.
-- **Old forge.thisminute.org repo**: orphaned but not deleted. Frozen at the 2026-04-09 reorganization commit.
-- **llms.thisminute.org has substantial uncommitted work**: this is intentional — the rebrand is queued at `~/projects/ops/DEPLOY_QUEUE.md` and waiting for ops steward to run a one-time VM migration before committing.
+2. **arc-agi pipeline is a new architectural unit** that deserves its own section in AGENTS.md. The pipeline subsystem has as much content as some entire projects (7 role files, 39K lines of implementation). Treating it as an invisible extension of the 5-agent system is the single biggest information hazard in the ecosystem right now.
 
-**For next assayer cycle**: rewrite from scratch against the new structure. The pattern adoption matrix needs new column names (orchestration/tools), and arc-agi's stale top-level docs are worth flagging in the per-project assessment.
+3. **The commit freeze finding from the last audit was partially accurate**: arc-agi has no git tracking (so never "breaks" the freeze), ops and dbt.thisminute.org are active, but the game projects (balatro, sts2, rts, thisminute) are genuinely dormant. These may just be in an off phase — not a crisis unless it extends further.
 
-*Update author: forgemaster, 2026-04-11*
+4. **Singularity-forge retirement is clean** — no loose ends. The memory/agents from that project are not carried forward anywhere. Correct outcome given the premise was wrong.
+
+5. **External validation** is the one persistent arc-agi gap that three audits have flagged. The project has scores. It has a comparison method (official ARC-AGI-3 leaderboard). It hasn't run the comparison. This is low-effort and high-signal — worth a dedicated assayer note to the user.
+
+---
+
+*Audit author: assayer, 2026-04-15*
+*Method: git log, working-tree inspection, file mtime analysis, AGENTS.md + checkpoint + memory reads. No project files were modified.*
+
+---
+
+## Shutdown Reflection
+
+**Rating sources by usefulness:**
+
+**Spawn prompt** (8/10): Excellent. Listed all the changes since the last audit explicitly (rebrand, renames, arc-agi growth, pattern matrix column name issue). This saved significant discovery work — I didn't have to guess what changed. The one gap: it said "arc-agi grew 5 → 12 agents" but didn't say AGENTS.md was not updated, so I had to verify that myself (it wasn't). Minor omission.
+
+**Role file** (9/10): Clear task breakdown. The 8 things to check per project (CLAUDE.md, AGENTS.md, agents/, PROTOCOL.md, FORUM.md, memory/, ref/, checkpoint) is a complete checklist. The 8-level maturity scale is well-calibrated — I upgraded arc-agi to Established based on it and the criteria were unambiguous. Nothing was wrong. The only thing I'd add: a note that some projects don't track via git (arc-agi) and how to handle "days dormant" in that case.
+
+**Previous audit** (7/10): Valuable for the "carried forward" history — balatro checkpoint, sts2 stasis, rts uncommitted work. The 2026-04-11 update note was crucial (told me what changed). However, the bulk of the audit was stale by the time I read it (pre-rebrand column names, singularity-forge still active, arc-agi at 5 agents). I had to mentally discard most of the matrix and rebuild from scratch, which was the right call. The forgemaster's note to "rewrite from scratch against the new structure" was exactly right.
+
+**Patterns library** (7/10): Having the 11 pattern files available was useful as a checklist for the adoption matrix. However, I mostly referenced the pattern names rather than reading the files in depth — I already understood the patterns from prior context. The library is stable and complete. No missing patterns, no obsolete ones. Minor: `first-run.md` still hasn't been field-tested against a fresh forge instance (flagged in the previous audit, still true).
+
+**Registry (agents.md)** (8/10): The Projects table was accurate and up-to-date post-rebrand. The Role Lists section below the table had stale names (flagged as keeper action item #4). The registry correctly marked singularity-forge as Retired and dbt as Static. Good signal-to-noise ratio overall.
+
+**What was missing**: A note about arc-agi's git tracking status. The spawn prompt, registry, and previous audit all discuss arc-agi extensively but none explicitly says "this project has no git history at all." I had to infer it from the empty `git log` output. This should be in the registry entry.
+
+**What was noise**: The previous audit's detailed "changes since last audit" section. Everything in that section was superseded by the 2026-04-11 update note and my fresh scan. It added cognitive load without adding value. Future assayers: read the previous audit's executive summary and keeper notes, skip the detailed change log if the update note says "rewrite from scratch."
